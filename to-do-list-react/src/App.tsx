@@ -30,7 +30,7 @@ const ToDoItem: FC<IToDoItem> = ({ name, isCompleted, isEditMode }) => {
 function App() {
   const [newTaskName, setNewTaskName] = useState("");
 
-  const handleNewTaskName = (event: KeyboardEvent<HTMLInputElement>) => {
+  const handleNewTaskName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTaskName(event.target.value);
   };
 
