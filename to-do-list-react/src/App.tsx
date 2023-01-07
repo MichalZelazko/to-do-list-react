@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useState } from "react";
+import React, { ChangeEvent, FC, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -12,6 +12,14 @@ function App() {
 
   const handleNewTaskName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTaskName(event.target.value);
+  };
+
+  const handleEditMode = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.currentTarget.parentElement?.classList.toggle("editMode");
+  };
+
+  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setToDoItems([toDoItems.filter()]);
   };
 
   const [toDoItems, setToDoItems] = useState([
@@ -36,7 +44,7 @@ function App() {
         />
         <label>{name}</label>
         <input type="text" />
-        <button className="edit" onClick={() => {}}>
+        <button className="edit" onClick={handleEditMode}>
           Edit
         </button>
         <button className="delete" onClick={() => {}}>
