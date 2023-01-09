@@ -1,88 +1,126 @@
 import React, { ChangeEvent, FC, useState } from "react";
 import "./App.css";
+import styled from "@emotion/styled";
+
+export const Header = styled.h3({
+  color: "#333",
+  fontWeight: "700",
+  fontSize: "15px",
+  borderBottom: "2px solid #333",
+  padding: "30px 0 10px",
+  margin: "0",
+  textTransform: "uppercase",
+});
+
+export const HiddenLabel = styled.label({
+  display: "none",
+});
+
+interface ButtonProps {
+  isDelete?: false;
+}
+
+export const Button = styled.button<ButtonProps>(({ isDelete }) => ({
+  outline: "none",
+  background: "none",
+  border: "0px",
+  color: "#888",
+  fontSize: "15px",
+  width: "60px",
+  margin: "10px 0 0",
+  fontFamily: "Lato, sans-serif",
+  cursor: "pointer",
+
+  "&:hover": {
+    color: "#333",
+  },
+}));
+
+interface ToDoItem {
+  id: number;
+  value: string;
+  isEditMode?: boolean;
+  isCompleted?: boolean;
+}
+
+interface ToDoItemProps extends Omit<ToDoItem, "id"> {
+  toggleEditMode: () => void;
+  toggleCompleted: () => void;
+}
+
+export const ToDoItem: FC<ToDoItemProps> = ({
+  id,
+  value,
+  isEditMode,
+  isCompleted,
+}) => {
+  return (
+    <li className={isEditMode ? "editMode" : ""}>
+      <input
+        type="checkbox"
+        checked={isCompleted}
+        onClick={() => console.log("clicked")}
+      />
+      {isEditMode && <label>{value}</label>}
+      {!isEditMode && <input type="text" onChange={() => {}} />}
+      <Button
+        className="edit"
+        onClick={() => {
+          toggleEditMode(id);
+        }}
+      >
+        Edit
+      </Button>
+      <Button onClick={() => {}}>Delete</Button>
+    </li>
+  );
+};
 
 function App() {
-  interface IToDoItem {
-    name: string;
-    isCompleted: boolean;
-    isEditMode?: boolean;
-  }
-
   const [newTaskName, setNewTaskName] = useState("");
 
-  const handleNewTaskName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTaskName(event.target.value);
-  };
-
-  const handleEditMode = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.currentTarget.parentElement?.classList.toggle("editMode");
-  };
-
-  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setToDoItems([toDoItems.filter()]);
-  };
-
-  const [toDoItems, setToDoItems] = useState([
-    { name: "Go shopping", isCompleted: false, isEditMode: false },
-    { name: "Learn React", isCompleted: false, isEditMode: false },
+  const [todos, setTodos] = useState<ToDoItemProps[]>([
+    { id: 0, value: "Pay Bills", isEditMode: false, isCompleted: false },
+    { id: 1, value: "Learn React", isEditMode: true, isCompleted: false },
   ]);
 
-  const addNewTask = (newTaskName: string) => {
-    setToDoItems([
-      ...toDoItems,
-      { name: newTaskName, isCompleted: false, isEditMode: false },
-    ]);
+  const addToDo = (value: string) => {
+    setTodos([...todos, { value, id: todos.length }]);
   };
 
-  const ToDoItem: FC<IToDoItem> = ({ name, isCompleted, isEditMode }) => {
-    return (
-      <li className={isEditMode ? "editMode" : ""}>
-        <input
-          type="checkbox"
-          checked={isCompleted}
-          onClick={() => console.log("clicked")}
-        />
-        <label>{name}</label>
-        <input type="text" />
-        <button className="edit" onClick={handleEditMode}>
-          Edit
-        </button>
-        <button className="delete" onClick={() => {}}>
-          Delete
-        </button>
-      </li>
-    );
+  const toggleEditMode = (id: number) => {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) return { ...todo, isEditMode: !todo.isEditMode };
+    });
+    setTodos(newTodos);
+    return todos;
   };
 
   return (
     <div className="App">
       <div className="container">
-        <p>
-          <label htmlFor="new-task">Add Item</label>
-          <input id="new-task" type="text" onChange={handleNewTaskName} />
-          <button
-            id="add-button"
-            onClick={() => {
-              addNewTask(newTaskName);
-            }}
-          >
-            Add
-          </button>
-        </p>
+        <Header>Add Item</Header>
+        <HiddenLabel htmlFor="new-task">Add Item</HiddenLabel>
+        <input
+          id="new-task"
+          type="text"
+          onChange={(e) => setNewTaskName(e.target.value)}
+        />
+        <Button id="add-button" onClick={() => addToDo(newTaskName)}>
+          Add
+        </Button>
 
-        <h3>Todo</h3>
+        <Header>Todo</Header>
         <ul id="incomplete-tasks">
-          {toDoItems.map(({ name, isCompleted, isEditMode }) => (
+          {todos.map((todo) => {
             <ToDoItem
-              key={name}
-              name={name}
-              isCompleted={isCompleted}
-              isEditMode={isEditMode}
-            />
-          ))}
+              {...todo}
+              toggleEditMode={() => toggleEditMode(todo.id)}
+            />;
+          })}
         </ul>
 
-        <h3>Completed</h3>
+        <Header>Completed</Header>
         <ul id="completed-tasks"></ul>
       </div>
     </div>
