@@ -8,7 +8,7 @@ export const Header = styled.h3({
   fontSize: "15px",
   borderBottom: "2px solid #333",
   padding: "30px 0 10px",
-  margin: "0",
+  margin: "0 0 10px 0",
   textTransform: "uppercase",
 });
 
@@ -34,6 +34,10 @@ export const Button = styled.button<ButtonProps>(({ isDelete }) => ({
   "&:hover": {
     color: "#333",
   },
+
+  "&[isDelete]": {
+    color: "#f00",
+  },
 }));
 
 interface ToDoItem {
@@ -46,32 +50,50 @@ interface ToDoItem {
 interface ToDoItemProps extends Omit<ToDoItem, "id"> {
   toggleEditMode: () => void;
   toggleCompleted: () => void;
+  handleDelete: () => void;
+  updateName: () => void;
 }
 
 export const ToDoItem: FC<ToDoItemProps> = ({
-  id,
+  // id,
   value,
   isEditMode,
   isCompleted,
+  toggleEditMode,
+  toggleCompleted,
+  handleDelete,
+  updateName,
 }) => {
   return (
     <li className={isEditMode ? "editMode" : ""}>
       <input
         type="checkbox"
         checked={isCompleted}
-        onClick={() => console.log("clicked")}
+        onClick={() => toggleCompleted()}
       />
-      {isEditMode && <label>{value}</label>}
-      {!isEditMode && <input type="text" onChange={() => {}} />}
+      {!isEditMode && <label>{value}</label>}
+      {isEditMode && (
+        <input
+          type="text"
+          // value={value}
+          onChange={() => updateName()}
+        />
+      )}
       <Button
         className="edit"
         onClick={() => {
-          toggleEditMode(id);
+          toggleEditMode();
         }}
       >
         Edit
       </Button>
-      <Button onClick={() => {}}>Delete</Button>
+      <Button
+        onClick={() => {
+          handleDelete();
+        }}
+      >
+        Delete
+      </Button>
     </li>
   );
 };
@@ -79,7 +101,7 @@ export const ToDoItem: FC<ToDoItemProps> = ({
 function App() {
   const [newTaskName, setNewTaskName] = useState("");
 
-  const [todos, setTodos] = useState<ToDoItemProps[]>([
+  const [todos, setTodos] = useState<ToDoItem[]>([
     { id: 0, value: "Pay Bills", isEditMode: false, isCompleted: false },
     { id: 1, value: "Learn React", isEditMode: true, isCompleted: false },
   ]);
@@ -91,6 +113,30 @@ function App() {
   const toggleEditMode = (id: number) => {
     const newTodos = todos.map((todo) => {
       if (todo.id === id) return { ...todo, isEditMode: !todo.isEditMode };
+      return todo;
+    });
+    setTodos(newTodos);
+    return todos;
+  };
+
+  const toggleCompleted = (id: number) => {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) return { ...todo, isCompleted: !todo.isCompleted };
+      return todo;
+    });
+    setTodos(newTodos);
+    return todos;
+  };
+
+  const handleDelete = (id: number) => {
+    const newTodos = todos.filter((todo) => todo.id !== id);
+    setTodos(newTodos);
+  };
+
+  const updateName = (id: number, newName: String) => {
+    const newTodos = todos.map((todo) => {
+      if (todo.id === id) return { ...todo, value: newTaskName };
+      return todo;
     });
     setTodos(newTodos);
     return todos;
@@ -113,15 +159,38 @@ function App() {
         <Header>Todo</Header>
         <ul id="incomplete-tasks">
           {todos.map((todo) => {
-            <ToDoItem
-              {...todo}
-              toggleEditMode={() => toggleEditMode(todo.id)}
-            />;
+            if (!todo.isCompleted) {
+              return (
+                <ToDoItem
+                  key={todo.id}
+                  {...todo}
+                  toggleEditMode={() => toggleEditMode(todo.id)}
+                  toggleCompleted={() => toggleCompleted(todo.id)}
+                  handleDelete={() => handleDelete(todo.id)}
+                  updateName={() => updateName(todo.id, newTaskName)}
+                />
+              );
+            }
           })}
         </ul>
 
         <Header>Completed</Header>
-        <ul id="completed-tasks"></ul>
+        <ul id="completed-tasks">
+          {todos.map((todo) => {
+            if (todo.isCompleted) {
+              return (
+                <ToDoItem
+                  key={todo.id}
+                  {...todo}
+                  toggleEditMode={() => toggleEditMode(todo.id)}
+                  toggleCompleted={() => toggleCompleted(todo.id)}
+                  handleDelete={() => handleDelete(todo.id)}
+                  updateName={() => updateName(todo.id, newTaskName)}
+                />
+              );
+            }
+          })}
+        </ul>
       </div>
     </div>
   );
