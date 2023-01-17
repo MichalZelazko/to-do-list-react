@@ -17,7 +17,7 @@ export const HiddenLabel = styled.label({
 });
 
 interface ButtonProps {
-  isDelete?: false;
+  isDelete?: boolean;
 }
 
 export const Button = styled.button<ButtonProps>(({ isDelete }) => ({
@@ -66,11 +66,7 @@ export const ToDoItem: FC<ToDoItemProps> = ({
 }) => {
   return (
     <li className={isEditMode ? "editMode" : ""}>
-      <input
-        type="checkbox"
-        checked={isCompleted}
-        onClick={() => toggleCompleted()}
-      />
+      <input type="checkbox" checked={isCompleted} onClick={toggleCompleted} />
       {!isEditMode && <label>{value}</label>}
       {isEditMode && (
         <input
@@ -82,11 +78,7 @@ export const ToDoItem: FC<ToDoItemProps> = ({
       <Button className="edit" onClick={toggleEditMode}>
         Edit
       </Button>
-      <Button
-        onClick={() => {
-          handleDelete();
-        }}
-      >
+      <Button onClick={handleDelete} isDelete>
         Delete
       </Button>
     </li>
@@ -111,7 +103,6 @@ function App() {
       return todo;
     });
     setTodos(newTodos);
-    return todos;
   };
 
   const toggleCompleted = (id: number) => {
@@ -120,7 +111,6 @@ function App() {
       return todo;
     });
     setTodos(newTodos);
-    return todos;
   };
 
   const handleDelete = (id: number) => {
