@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, FC, useState } from "react";
 import "./App.css";
 import styled from "@emotion/styled";
 
@@ -51,11 +51,11 @@ interface ToDoItemProps extends Omit<ToDoItem, "id"> {
   toggleEditMode: () => void;
   toggleCompleted: () => void;
   handleDelete: () => void;
-  updateName: () => void;
+  updateName: (newTaskName: string) => void;
 }
 
 export const ToDoItem: FC<ToDoItemProps> = ({
-  // id,
+  //  id,
   value,
   isEditMode,
   isCompleted,
@@ -75,16 +75,11 @@ export const ToDoItem: FC<ToDoItemProps> = ({
       {isEditMode && (
         <input
           type="text"
-          // value={value}
-          onChange={() => updateName()}
+          value={value}
+          onChange={(e) => updateName(e.target.value)}
         />
       )}
-      <Button
-        className="edit"
-        onClick={() => {
-          toggleEditMode();
-        }}
-      >
+      <Button className="edit" onClick={toggleEditMode}>
         Edit
       </Button>
       <Button
@@ -133,7 +128,7 @@ function App() {
     setTodos(newTodos);
   };
 
-  const updateName = (id: number, newName: String) => {
+  const updateName = (id: number) => (newTaskName: string) => {
     const newTodos = todos.map((todo) => {
       if (todo.id === id) return { ...todo, value: newTaskName };
       return todo;
@@ -167,7 +162,7 @@ function App() {
                   toggleEditMode={() => toggleEditMode(todo.id)}
                   toggleCompleted={() => toggleCompleted(todo.id)}
                   handleDelete={() => handleDelete(todo.id)}
-                  updateName={() => updateName(todo.id, newTaskName)}
+                  updateName={updateName(todo.id)}
                 />
               );
             }
@@ -185,7 +180,7 @@ function App() {
                   toggleEditMode={() => toggleEditMode(todo.id)}
                   toggleCompleted={() => toggleCompleted(todo.id)}
                   handleDelete={() => handleDelete(todo.id)}
-                  updateName={() => updateName(todo.id, newTaskName)}
+                  updateName={updateName(todo.id)}
                 />
               );
             }
