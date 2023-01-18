@@ -35,7 +35,7 @@ export const Button = styled.button<ButtonProps>(({ isDelete }) => ({
     color: "#333",
   },
 
-  "&[isDelete]": {
+  "[isDelete]": {
     color: "#f00",
   },
 }));
@@ -51,7 +51,7 @@ interface ToDoItemProps extends Omit<ToDoItem, "id"> {
   toggleEditMode: () => void;
   toggleCompleted: () => void;
   handleDelete: () => void;
-  updateName: (newTaskName: string) => void;
+  updateName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ToDoItem: FC<ToDoItemProps> = ({
@@ -72,7 +72,7 @@ export const ToDoItem: FC<ToDoItemProps> = ({
         <input
           type="text"
           value={value}
-          onChange={(e) => updateName(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateName(e)}
         />
       )}
       <Button className="edit" onClick={toggleEditMode}>
@@ -118,14 +118,14 @@ function App() {
     setTodos(newTodos);
   };
 
-  const updateName = (id: number) => (newTaskName: string) => {
-    const newTodos = todos.map((todo) => {
-      if (todo.id === id) return { ...todo, value: newTaskName };
-      return todo;
-    });
-    setTodos(newTodos);
-    return todos;
-  };
+  const updateName =
+    (id: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newTodos = todos.map((todo) => {
+        if (todo.id === id) return { ...todo, value: event.target.value };
+        return todo;
+      });
+      setTodos(newTodos);
+    };
 
   return (
     <div className="App">
